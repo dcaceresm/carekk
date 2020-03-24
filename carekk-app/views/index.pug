@@ -5,6 +5,8 @@ block content
   p Welcome to #{title} 
     span.muted #{beta ? "(beta)":""}
 
-  button Crear Sala
+  form(action='/game/create' method="POST")
+    button(type="submit") Crear Sala
+
   button Entrar a Sala
   

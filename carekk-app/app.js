@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+const GameManager = require('./game/logic/GameManager')
 
 var app = express();
 
@@ -14,7 +14,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
+app.set('gameManager', new GameManager() )
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,9 +40,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const DeckFactory = require('./game/assets/DeckFactory')
-let deck = new DeckFactory(true).createDeck();
-deck.viewPile();
+
 
 
 

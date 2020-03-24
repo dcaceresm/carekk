@@ -6,6 +6,8 @@ class Player {
         this._hand = new CardPile();
         this._visibleTriplet = new CardPile();
         this._hiddenTriplet = new CardPile();
+
+        this._connected = false;
     }
 
     

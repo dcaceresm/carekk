@@ -31,14 +31,10 @@ server.on('listening', onListening);
 
 //TODO: Mover a un archivo aparte!!!!
 var io = require('socket.io')(server);
-
-io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-});
-
+const SocketWrapper = require('../utils/SocketWrapper');
+console.log("GAME MANAGER EN WWW:", app.get('gameManager'))
+let sock = new SocketWrapper(io, app.get('gameManager'))
+sock.config();
 
 /**
  * Normalize a port into a number, string, or false.
