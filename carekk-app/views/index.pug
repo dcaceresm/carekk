@@ -1,12 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title} 
-    span.muted #{beta ? "(beta)":""}
+  .container
+    h1= title
+    p Welcome to #{title} 
+      span.muted #{beta ? "(beta)":""}
 
-  form(action='/game/create' method="POST")
-    button(type="submit") Crear Sala
+    form(action='/game/create' method="POST")
+      button(type="submit") Crear Sala
 
-  button Entrar a Sala
+    form(action='/game/join' method="POST")
+      input(type="text" name="room")
+      button(type="submit") Entrar a Sala
   

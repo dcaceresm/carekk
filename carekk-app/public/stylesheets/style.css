@@ -6,3 +6,34 @@ body {
 a {
   color: #00B7FF;
 }
+
+
+
+
+.container{
+  background-color: #a0cca8;
+  width: 100%;
+  padding: 0.5em 1em;
+}
+.container h1{
+  text-align: center;
+}
+
+.gameWindow{
+  background-color: white;
+  width:300px;
+  padding: 0.5em 1em;
+}
+.cardPile{
+  width:60px;
+  height:120px;
+  border: 1px solid black
+}
+
+#playerName{
+  font-weight: bold;
+}
+
+#mainDeckCount{
+  font-weight: bold;
+}

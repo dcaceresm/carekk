@@ -10,8 +10,13 @@ class Player {
         this._connected = false;
     }
 
-    
+    drawCards(pile){
+        this._hand.addCard(...pile.drawCard())
+    }
 
+    generateVTriplet(){}
+
+    generateHTriplet(){}
 }
 
 module.exports = Player;

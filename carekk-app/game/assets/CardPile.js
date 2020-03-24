@@ -6,6 +6,11 @@ class CardPile {
     addCard(card) {
         this.cards.push(card);
     }
+
+    drawCard(){
+        return this.cards.pop() ? [this.cards.pop()] : [];
+    }
+    
     shufflePile() {
         for(let i = this.cards.length - 1; i > 0; i--){
             const j = Math.floor(Math.random() * i)
@@ -20,6 +25,10 @@ class CardPile {
     }
     isEmpty() {
         return this.cards.length == 0;
+    }
+
+    length() {
+        return this.cards.length;
     }
 }
 

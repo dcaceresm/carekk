@@ -22,7 +22,17 @@ router.get('/game/create', function(req,res,next){
 
 })
 
-
+router.post('/game/join', (req, res, next) => {
+  if(req.body.room){
+    let gm = req.app.get('gameManager')
+    let exists = gm.getGame(req.body.room) || false 
+    if(exists) res.redirect('/game/'+req.body.room)
+    else res.redirect(404,'/')
+  } else {
+    res.redirect(400, '/')
+  }
+  
+})
 router.post('/game/create', function(req,res,next){
   console.log(new Date(), "received Room creation request.")
   let gameRoom = false;

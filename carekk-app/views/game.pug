@@ -2,13 +2,57 @@ extends layout
 
 block content
     h1 Sala de Juego #{id}    
+    p Jugando como 
+        span#playerName
+
+    h4 Lista de Jugadores
+    ul#playerList
+
+    .buttons
+        button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
+
+    .container        
+        .gameContainer
+            .gameWindow
+                .cardPiles
+                    .cardPile#mainDeck
+                        span Mazo
+                        span#mainDeckCount
+            .currentPlayer
+            .triplets
+            .playerHand
+                p Mi mano es:
+
+
 
     script(src="/socket.io/socket.io.js")
     script.
         var socket = io('http://localhost:3000');
         socket.on('news', function (data) {
-            console.log(data);
             socket.emit('roomConnection', { room: '#{id}' });
         });
 
 
+        socket.on('updateGameData', (data) => {
+            console.log("Updated Game Data from server")
+            if(data.cardCount){
+                $('#mainDeckCount').empty()    
+                $('#mainDeckCount').text(data.cardCount)    
+            }
+        })
+        socket.on('playerData', (data) => {
+            $('#playerName').text(data.name)
+        })
+
+        socket.on('playerList', (data) => {
+            $('#playerList').empty()
+            data.players.map(name => $('#playerList').append('<li>'+name+'</li>') )            
+        })
+
+
+
+    script.
+        const initGame = () => {
+            console.log(socket)
+            socket.emit('startGame',{initPlayer: $('#playerName').text()})
+        }
