@@ -67,12 +67,21 @@ class SocketWrapper {
                     socket.emit('updatePlayerData',{
                       currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                     })
-                    gm.playCard(cardToPlay)
+                    if( cardToPlay.canPlayOver(gm.topCard()) ){
+                      gm.playCard(cardToPlay)
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
                           cardCount : gm.getDeckCards().toString(),
                           topCard : gm.topCard().toTuple()
                         }
                       );                    
+                    }
+                    else {
+                      gm.addToHand(socket.playerName, cardToPlay)
+                      socket.emit('updatePlayerData',{
+                        warning : "No puedes jugar esta carta",
+                        currentHand : gm.getHand(socket.playerName, {format:"tuple"})
+                      })
+                    }
                   }
               })
 

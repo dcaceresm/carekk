@@ -21,7 +21,7 @@ class Player {
         return this._hand;
     }
 
-
+    
     generateVTriplet(){}
 
     generateHTriplet(){}

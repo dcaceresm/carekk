@@ -35,6 +35,17 @@ class Card {
         return this._value == tuple[0] && this._symbol === tuple[1]
     }
 
+    canPlayOver(anotherCard){
+        if(anotherCard){
+            return (
+                !this._value //La carta a jugar es un 2, entonces se puede jugar siempre sobre todas las cartas
+                || (anotherCard._value == 5 && (15-(7 ^ (this._value+2)))>=7 ) //La carta puesta es un 7, se debe jugar leq
+                || (anotherCard._value != 5 && this._value >= anotherCard._value) // La carta es normal, debo jugar 1 mas alta
+            )
+        }
+        return true
+    }
+
 }
 
 

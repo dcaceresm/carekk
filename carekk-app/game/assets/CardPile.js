@@ -19,7 +19,7 @@ class CardPile {
     }
     
     seeTop(){
-        return this.cards[this.cards.length-1]
+        return this.cards.length>0 ? this.cards[this.cards.length-1] : null;
     }
 
     pickCardFromTuple(tuple){

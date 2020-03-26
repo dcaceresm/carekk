@@ -56,6 +56,10 @@ a {
   color: white;
 }
 
+#warning{
+  color:red;
+  font-weight: bold;
+}
 #discardPile{
   border: 1px solid #ddd;
   font-size: 40px;

@@ -47,6 +47,10 @@ class Game {
     playCard(card){
         this._discard.addCard(card)
     }
+
+    addToHand(playerID, card){        
+        this._players.get(playerID).getHand().addCard(card);
+    }
     startGame(manager){
 
     }

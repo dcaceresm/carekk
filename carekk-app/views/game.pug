@@ -24,6 +24,7 @@ block content
                         .cardPile#discardPile                                                        
                             #topCard &nbsp;            
             .currentPlayer
+            .warning#warning
             .triplets
             .playerHand
                 p Mi mano es:
@@ -40,6 +41,12 @@ block content
                 'C': '♥️',
                 'D': '♦️',
             }
+        numbers = {
+            11 : 'J',
+            12 : 'Q',
+            13 : 'K',
+            14 : 'A' 
+        }
         socket.on('news', function (data) {
             socket.emit('roomConnection', { room: '#{id}' });
         });
@@ -55,17 +62,22 @@ block content
             }
             if(data.topCard){
                 $('#topCard').empty()    
-                $('#topCard').text(data.topCard[0]+" "+suits[data.topCard[1]])
+                $('#topCard').text((numbers[data.topCard[0]+2] || data.topCard[0]+2)+" "+suits[data.topCard[1]])
             }
         })
 
         socket.on('updatePlayerData', (data) => {
             if(data.currentHand){
                 $('#hand').empty()
+                $('#warning').empty()
                 //$('#hand').text(data.currentHand)    
                 data.currentHand.map(c => {
-                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+c[0]+" <b>"+suits[c[1]]+"</b></button>")
+                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+(numbers[c[0]+2] || c[0]+2)+" <b>"+suits[c[1]]+"</b></button>")
                 })
+            }
+            if(data.warning){
+                $('#warning').empty();
+                $('#warning').text(data.warning)
             }
         })
 

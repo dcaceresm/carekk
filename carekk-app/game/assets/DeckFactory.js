@@ -11,7 +11,7 @@ class DeckFactory {
             'P', //Pica
             'T' // Trebol
         ];
-        this.numbers = [...Array(12).keys()];  
+        this.numbers = [...Array(13).keys()];  
         this.joker = joker;
     }
 
@@ -35,6 +35,10 @@ class DeckFactory {
         }
 
         deck.shufflePile();
+        //Vuelve a barajar el Mazo entre 5 y 10 veces
+        for(let i = 0; i<Math.ceil(Math.random()*5)+5;i++){
+            deck.shufflePile();            
+        }
         return deck;
     };
 }
