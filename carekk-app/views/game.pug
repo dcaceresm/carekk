@@ -10,6 +10,8 @@ block content
 
     .buttons
         button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
+        button#drawNplay(onClick="drawAndPlay()" active="true") Sacar del Mazo
+        button#drawNplay(onClick="drawAndPlay()" active="true") Lanzar una carta
 
     .container        
         .gameContainer
@@ -18,10 +20,17 @@ block content
                     .cardPile#mainDeck
                         span Mazo
                         span#mainDeckCount
+                    .cardPile#discardPile
+                        span Descarte
+                        span#discardPileCount
+                        span Carta Superior 
+                        span#topCard
+                    
             .currentPlayer
             .triplets
             .playerHand
                 p Mi mano es:
+                #hand
 
 
 
@@ -39,7 +48,27 @@ block content
                 $('#mainDeckCount').empty()    
                 $('#mainDeckCount').text(data.cardCount)    
             }
+            if(data.discardCount){
+
+            }
+            if(data.topCard){
+                $('#topCard').empty()    
+                $('#topCard').text(data.topCard)
+            }
         })
+
+        socket.on('updatePlayerData', (data) => {
+            console.log("Updated Your Data from server")
+            if(data.currentHand){
+                $('#hand').empty()    
+                console.log(data.currentHand)
+                //$('#hand').text(data.currentHand)    
+                data.currentHand.map(c => {
+                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+c[0]+" de <b>"+c[1]+"</b></button>")
+                })
+            }
+        })
+
         socket.on('playerData', (data) => {
             $('#playerName').text(data.name)
         })
@@ -53,6 +82,15 @@ block content
 
     script.
         const initGame = () => {
-            console.log(socket)
             socket.emit('startGame',{initPlayer: $('#playerName').text()})
+
+        }
+
+        const drawAndPlay = () => {
+            socket.emit('drawAndPlay')
+        }
+
+        const playCard = (event) => {            
+            let tuple = [parseInt(event.attributes.v.value), event.attributes.sym.value]
+            socket.emit('playCard', {card : tuple})
         }

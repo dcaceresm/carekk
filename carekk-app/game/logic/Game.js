@@ -1,5 +1,6 @@
 const DeckFactory = require('../assets/DeckFactory')
 const Player = require('./Player')
+const CardPile = require('../assets/CardPile')
 
 
 class Game {
@@ -7,6 +8,7 @@ class Game {
     constructor(id, options){
         this._id = id;
         this._deck = new DeckFactory(options.joker || false).createDeck();
+        this._discard = new CardPile();
         this._players = new Map()
         this._status = "idle";
     }
@@ -29,9 +31,22 @@ class Game {
 
     drawCard(playerID){
         let p = this._players.get(playerID)
-        p.drawCard(this._deck)
+        p.drawCards(this._deck)
     }
 
+    getHand(playerID, options){
+        let p = this._players.get(playerID);
+        let h = p.getHand();
+        if(options.format){
+            if(options.format === "string" ) return h.map(e => e.toString())
+            if(options.format === "tuple"  ) return h.map(e => e.toTuple())
+        } 
+        return h;
+    }
+
+    playCard(card){
+        this._discard.addCard(card)
+    }
     startGame(manager){
 
     }
@@ -42,7 +57,9 @@ class Game {
 
 
 
-
+    topCard(){
+        return this._discard.seeTop()
+    }
 
 
 

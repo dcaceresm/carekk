@@ -35,5 +35,6 @@ a {
 }
 
 #mainDeckCount{
+  display:block;
   font-weight: bold;
 }

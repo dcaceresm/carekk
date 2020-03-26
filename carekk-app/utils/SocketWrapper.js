@@ -6,7 +6,6 @@ class SocketWrapper {
     constructor(io, gameManager){
         this._io = io // Socket IO
         this._gameManager = gameManager;
-        console.log("GAME MANAGER EN SOCKET WRAPPER: ", this._gameManager)
     }
 
 
@@ -40,20 +39,41 @@ class SocketWrapper {
 
 
                 that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                      cardCount : gm.getDeckCards()
+                      cardCount : gm.getDeckCards().toString()
                     }
                 );
 
               })
-              socket.on('playCard', ()=>{
+              socket.on('drawAndPlay', ()=>{
                 let gm = that._gameManager.getGame(socket.roomNumber)
 
-
-
+                gm.drawCard(socket.playerName)
                 that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                      cardCount : gm.getDeckCards()
+                      cardCount : gm.getDeckCards().toString()
                     }
                 );
+
+                socket.emit('updatePlayerData',{
+                  currentHand : gm.getHand(socket.playerName, {format:"tuple"})
+                })
+              })
+              
+
+              socket.on('playCard', (data) => {
+                  let gm = that._gameManager.getGame(socket.roomNumber)
+                  if(data.card){
+                    let cardTuple = data.card;
+                    let cardToPlay = gm.getHand(socket.playerName, {}).pickCardFromTuple(cardTuple)
+                    socket.emit('updatePlayerData',{
+                      currentHand : gm.getHand(socket.playerName, {format:"tuple"})
+                    })
+                    gm.playCard(cardToPlay)
+                      that._io.to('room'+socket.roomNumber).emit('updateGameData', {
+                          cardCount : gm.getDeckCards().toString(),
+                          topCard : gm.topCard().toTuple()
+                        }
+                      );                    
+                  }
               })
 
               socket.on('disconnect', () => {

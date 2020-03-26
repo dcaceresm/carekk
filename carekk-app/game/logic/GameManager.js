@@ -8,12 +8,12 @@ class GameManager {
 
 
     addGame(roomId, opts){
-        console.log("GAME MANAGER: Attempting Game Creation. Room ID", roomId)
+        //console.log("GAME MANAGER: Attempting Game Creation. Room ID", roomId)
         this._games.set(roomId, new Game(roomId, opts || {}));
     }
 
     getGame(roomId){
-        console.log("GAME MANAGER: Attempting Game Retrieval. Room ID", roomId)
+        //console.log("GAME MANAGER: Attempting Game Retrieval. Room ID", roomId)
         return this._games.get(roomId);
     }
 
