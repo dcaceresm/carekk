@@ -11,21 +11,18 @@ block content
     .buttons
         button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
         button#drawNplay(onClick="drawAndPlay()" active="true") Sacar del Mazo
-        button#drawNplay(onClick="drawAndPlay()" active="true") Lanzar una carta
 
     .container        
         .gameContainer
             .gameWindow
                 .cardPiles
-                    .cardPile#mainDeck
-                        span Mazo
-                        span#mainDeckCount
-                    .cardPile#discardPile
-                        span Descarte
-                        span#discardPileCount
-                        span Carta Superior 
-                        span#topCard
-                    
+                    .cardBorder
+                        .cardPile.pattern12#mainDeck
+                            span#mainDeckCount
+                            span  cards left
+                    .cardBorder                            
+                        .cardPile#discardPile                                                        
+                            #topCard &nbsp;            
             .currentPlayer
             .triplets
             .playerHand
@@ -37,13 +34,18 @@ block content
     script(src="/socket.io/socket.io.js")
     script.
         var socket = io('http://localhost:3000');
+        var suits = {
+                'T': '♣️',
+                'P': '♠️',
+                'C': '♥️',
+                'D': '♦️',
+            }
         socket.on('news', function (data) {
             socket.emit('roomConnection', { room: '#{id}' });
         });
 
 
         socket.on('updateGameData', (data) => {
-            console.log("Updated Game Data from server")
             if(data.cardCount){
                 $('#mainDeckCount').empty()    
                 $('#mainDeckCount').text(data.cardCount)    
@@ -53,18 +55,16 @@ block content
             }
             if(data.topCard){
                 $('#topCard').empty()    
-                $('#topCard').text(data.topCard)
+                $('#topCard').text(data.topCard[0]+" "+suits[data.topCard[1]])
             }
         })
 
         socket.on('updatePlayerData', (data) => {
-            console.log("Updated Your Data from server")
             if(data.currentHand){
-                $('#hand').empty()    
-                console.log(data.currentHand)
+                $('#hand').empty()
                 //$('#hand').text(data.currentHand)    
                 data.currentHand.map(c => {
-                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+c[0]+" de <b>"+c[1]+"</b></button>")
+                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+c[0]+" <b>"+suits[c[1]]+"</b></button>")
                 })
             }
         })
