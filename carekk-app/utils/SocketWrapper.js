@@ -1,4 +1,4 @@
-const names = ['player', 'cardist', 'ludo']
+const names = ['diamond', 'heart', 'pike', 'club']
 
 
 class SocketWrapper {
@@ -133,9 +133,10 @@ class SocketWrapper {
                     })
                     if( cardToPlay.canPlayOver(gm.topCard()) ){
                       gm.playCard(cardToPlay)
+                      cardToPlay.callEffect(gm)
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
                           cardCount : gm.getDeckCards().toString(),
-                          topCard : gm.topCard().toTuple(),                                                  
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
                         }
                       );
                       let nextPlayer = gm.nextPlayer();

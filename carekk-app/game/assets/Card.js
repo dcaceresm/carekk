@@ -6,14 +6,14 @@ cardSymbols.set('D', 'Diamantes')
 cardSymbols.set('P', 'Picas')
 cardSymbols.set('T', 'Tréboles')
 
-const identityCallback = (any) => {}
+const identityCallback = (any) => {console.log(new Date(), "Card called identity callback.")}
 
 class Card {
 
     constructor(symbol, value, effect){
         this._symbol = symbol;
         this._value = value;
-        this._effect = effect || identityCallback;
+        this._cardEffect = effect || identityCallback;
     }
 
     get 
@@ -41,11 +41,16 @@ class Card {
         if(anotherCard){
             return (
                 !this._value //La carta a jugar es un 2, entonces se puede jugar siempre sobre todas las cartas
+                || this._value == 8
                 || (anotherCard._value == 5 && (15-(7 ^ (this._value+2)))>=7 ) //La carta puesta es un 7, se debe jugar leq
                 || (anotherCard._value != 5 && this._value >= anotherCard._value) // La carta es normal, debo jugar 1 mas alta
             )
         }
         return true
+    }
+
+    callEffect(args){
+        this._cardEffect(args);
     }
 
 }

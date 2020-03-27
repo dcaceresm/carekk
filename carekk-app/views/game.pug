@@ -1,30 +1,29 @@
 extends layout
 
 block content
-    h1 Sala de Juego #{id}    
-    p Jugando como 
-        span#playerName
-
-    h4 Lista de Jugadores
-    ul#playerList
+    .header
+        h1 Sala #{id}    
+        p Jugando como 
+            span#playerName
+    .row
+        span(style="font-weight:bold;") Jugadores:
+        ul#playerList
 
     .buttons
         if initButton
-            button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
-        button#drawNplay(onClick="drawAndPlay()" active="true") Sacar del Mazo
+            button.gameButton#initGameButton(onClick="initGame()" active="true") Iniciar Juego
 
-    .container        
+    .container.pattern2.prop--border-radius--5px
         .gameContainer
             .gameWindow
                 .cardPiles
                     .cardBorder
                         .cardPile.pattern12#mainDeck
                             span#mainDeckCount
-                            span  cards left
                     .cardBorder                            
                         .cardPile#discardPile                                                        
                             #topCard &nbsp;   
-                            button(onClick="drawDiscard()" active="true") Robar Pila         
+                            button(onClick="drawDiscard()" active="true") Llevarse las Cartas      
             .currentPlayer
             .warning#warning
             .canPlay#canPlay
@@ -76,7 +75,7 @@ block content
                 $('#warning').empty()
                 //$('#hand').text(data.currentHand)    
                 data.currentHand.map(c => {
-                    $('#hand').append('<button onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+(numbers[c[0]+2] || c[0]+2)+" <b>"+suits[c[1]]+"</b></button>")
+                    $('#hand').append('<button class="playableCard" onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+(numbers[c[0]+2] || c[0]+2)+" <b>"+suits[c[1]]+"</b></button>")
                 })
             }
             if(data.warning){
@@ -96,7 +95,7 @@ block content
 
         socket.on('playerList', (data) => {
             $('#playerList').empty()
-            data.players.map(name => $('#playerList').append('<li>'+name+'</li>') )            
+            data.players.map(name => $('#playerList').append('<li class="playerItem">'+name+'</li>') )            
         })
 
 
@@ -104,12 +103,10 @@ block content
     script.
         const initGame = () => {
             socket.emit('startGame',{initPlayer: $('#playerName').text()})
+            $('#initGameButton').prop('disabled', true);
 
         }
 
-        const drawAndPlay = () => {
-            socket.emit('drawAndPlay')
-        }
 
         const drawDiscard = () => {
             socket.emit('drawDiscard')

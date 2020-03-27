@@ -1,15 +1,16 @@
 extends layout
 
 block content
-  .container
-    h1= title
-    p Welcome to #{title} 
-      span.muted #{beta ? "(beta)":""}
-
+  h1= title
+  p Welcome to #{title} 
+    span.muted #{beta ? "(beta)":""}
+  .row
+    img(src="/images/cacu.png")
+  .row
     form(action='/game/create' method="POST")
-      button(type="submit") Crear Sala
-
+      button.gameButton(type="submit") Crear Sala
+  .row
     form(action='/game/join' method="POST")
       input(type="text" name="room")
-      button(type="submit") Entrar a Sala
+      button.gameButton(type="submit") Entrar a Sala
   

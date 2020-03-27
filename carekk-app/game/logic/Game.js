@@ -84,7 +84,10 @@ class Game {
     }
     
 
-    burnCards(){}
+    burnCards(){
+        console.log(new Date(), "someone is burning cards")
+        this._burnt.appendAndEmpty(this._discard)
+    }
 
     flipDirection(){
         this._playerOrder.reverse();    
