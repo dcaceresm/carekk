@@ -6,12 +6,14 @@ cardSymbols.set('D', 'Diamantes')
 cardSymbols.set('P', 'Picas')
 cardSymbols.set('T', 'Tréboles')
 
+const identityCallback = (any) => {}
 
 class Card {
 
-    constructor(symbol, value){
+    constructor(symbol, value, effect){
         this._symbol = symbol;
         this._value = value;
+        this._effect = effect || identityCallback;
     }
 
     get 

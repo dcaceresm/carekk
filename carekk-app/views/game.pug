@@ -9,7 +9,8 @@ block content
     ul#playerList
 
     .buttons
-        button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
+        if initButton
+            button#initGameButton(onClick="initGame()" active="true") Iniciar Juego
         button#drawNplay(onClick="drawAndPlay()" active="true") Sacar del Mazo
 
     .container        
@@ -22,9 +23,11 @@ block content
                             span  cards left
                     .cardBorder                            
                         .cardPile#discardPile                                                        
-                            #topCard &nbsp;            
+                            #topCard &nbsp;   
+                            button(onClick="drawDiscard()" active="true") Robar Pila         
             .currentPlayer
             .warning#warning
+            .canPlay#canPlay
             .triplets
             .playerHand
                 p Mi mano es:
@@ -61,8 +64,9 @@ block content
 
             }
             if(data.topCard){
-                $('#topCard').empty()    
-                $('#topCard').text((numbers[data.topCard[0]+2] || data.topCard[0]+2)+" "+suits[data.topCard[1]])
+                $('#topCard').empty()
+                if(data.topCard[0]!=="" && data.topCard[1]!=="")    
+                    $('#topCard').text((numbers[data.topCard[0]+2] || data.topCard[0]+2)+" "+suits[data.topCard[1]]);
             }
         })
 
@@ -78,6 +82,11 @@ block content
             if(data.warning){
                 $('#warning').empty();
                 $('#warning').text(data.warning)
+            }
+
+            if(data.canPlay){
+                $('#canPlay').empty()   
+                $('#canPlay').text(data.canPlay+" puedes jugar.")   
             }
         })
 
@@ -100,6 +109,10 @@ block content
 
         const drawAndPlay = () => {
             socket.emit('drawAndPlay')
+        }
+
+        const drawDiscard = () => {
+            socket.emit('drawDiscard')
         }
 
         const playCard = (event) => {            

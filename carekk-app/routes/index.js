@@ -50,7 +50,10 @@ router.post('/game/create', function(req,res,next){
     } 
   }
   console.log(new Date(), "Game created successfully, redirecting...")
-  res.redirect('/game/'+roomID)
+  res.render('game', {
+    id:roomID,
+    initButton: true
+  })
 })
 
 

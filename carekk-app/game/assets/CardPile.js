@@ -23,10 +23,7 @@ class CardPile {
     }
 
     pickCardFromTuple(tuple){
-        console.log(new Date(), "cards in pile :",this.cards)
-        console.log(new Date(), "tuple picked on pickCard:", tuple)
         let idx = this.cards.findIndex(c => {
-            console.log(c)
             return c.equalsTuple(tuple)
         });
         if(idx>=0){
@@ -57,6 +54,11 @@ class CardPile {
 
     map(callback){
         return this.cards.map(callback)
+    }
+
+    appendAndEmpty(toEmpty){
+        this.cards.push(...toEmpty.cards)
+        toEmpty.cards = []
     }
 }
 

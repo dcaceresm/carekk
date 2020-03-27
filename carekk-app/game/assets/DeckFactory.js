@@ -2,7 +2,13 @@ const CardPile = require('./CardPile.js')
 const NumericCard = require('./NumericCard.js')
 const JokerCard = require('./JokerCard.js')
 
+const sideEffects = {
+    8 : (game) => {game.burnCards()},
+    9 : (game) => {game.flipDirection()},
+    100 : (game) => {game.burnToNext()},
+    
 
+}
 class DeckFactory {
     constructor (joker) {
         this.symbols = [
@@ -27,8 +33,8 @@ class DeckFactory {
             })
     
             if(this.joker){
-                deck.addCard(new JokerCard('J',100));
-                deck.addCard(new JokerCard('J',100));
+                deck.addCard(new JokerCard('J',0));
+                deck.addCard(new JokerCard('J',0));
             }
     
             deck.shufflePile();
