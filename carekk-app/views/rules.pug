@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  .centered-row
+    h1 Reglas del juego (en construcción)
+        img(src="/images/minicacu.png" width="48px")
+  .row
+    span.muted Dado que el juego está en versión 
+        i beta 
+        span esta página está en modificación. A medida que se implementen nuevas reglas se irán agregando aquí.
+  .row
+    span.muted Estas reglas son referenciales y están basadas en las partidas jugadas por los desarrolladores de esta implementación online. Cualquier sugerencia o propuesta de cambio es bien recibida :)
+
+  .row
+    h2 🏆 Protip: La práctica hace al maestro 
+        
+  .row
+    h3 Cartas
+    ul#ruleList
+        li Las cartas se deben jugar siempre en orden de 
+            b menor a Mayor
+            span , donde el 2 es la carta más pequeña y el As la más alta, es decir:
+            b  2, 3, 4, ... , J, Q, K, A
+        li Algunas cartas tienen habilidades especiales:
+        ul
+            li El 2 es comodín, es decir, se puede jugar en todo momento.
+            li El 7 obliga al siguiente jugador a arrojar una carta menor o igual a 7 en su turno. Luego el juego continúa normal.
+            li El 10 funciona como comodín, y además 
+                b quema 
+                span las cartas. Una definición de esto se encuentra más adelante.
+            li El J invierte el sentido del juego (análogo a la carta 
+                i Reversa 
+                span del conocido juego UNO )
+            li
+                span.muted (planned) 
+                span EL Joker es un comodín que obliga al siguiente jugador a llevarse toda la pila de descarte a su mano 😈
+

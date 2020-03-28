@@ -10,6 +10,9 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.get('/reglas', function(req, res, next) {
+  res.render('rules');
+});
 
 router.get('/game/:gameId', function(req,res,next){  
   res.render('game', {

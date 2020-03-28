@@ -10,9 +10,11 @@ block content
     img(src="/images/cacu.png" width="300px")
   .row.centered-row
     form(action='/game/create' method="POST")
-      button.gameButton(type="submit") Crear Sala
+      button.gameButton(type="submit") Crear Mesa
   .row.centered-row
     form(action='/game/join' method="POST")
       input(type="text" name="room")
-      button.gameButton(type="submit") Entrar a Sala
-  
+      button.gameButton(type="submit") Entrar a Mesa
+  .row.centered-row
+    form(action='/reglas' method="GET")      
+      button.gameButton.pinkButton(type="submit") Da Rules
