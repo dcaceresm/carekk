@@ -1,5 +1,9 @@
 # CareKK
-![cacu](https://raw.githubusercontent.com/dcaceresm/carekk/master/carekk-app/public/images/cacu.png)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/dcaceresm/carekk/master/carekk-app/public/images/cacu.png">
+</p>
+
 Inspirado en el juego universitario favorito de los niños de [31 Minutos](https://es.wikipedia.org/wiki/31_minutos), llega **CareKK**, una versión online de este juego para disfrutar con toda la familia (Edad Recomendada: 0-99 Años).
 
 Disponible en [(Pronto...)](https://###)
