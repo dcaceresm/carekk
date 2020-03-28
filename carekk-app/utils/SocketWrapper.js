@@ -54,12 +54,15 @@ class SocketWrapper {
                 });
 
                 that._io.to('room'+socket.roomNumber).emit('updatePlayerData', {
-                    canPlay:'no',                                          
+                    canPlay:'no ',                                          
                   }
                 );
-                socket.emit('updatePlayerData',{ canPlay: 'si'})
+
+                gm.startGame();
+                socket.emit('updatePlayerData',{ canPlay: ' '})
                     that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                      cardCount : gm.getDeckCards().toString()                      
+                      cardCount : gm.getDeckCards().toString(),
+                      topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""])                  
                     }
                 );
               })
@@ -103,16 +106,16 @@ class SocketWrapper {
                       topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),    
                     }
                 );
-                let nextPlayer = gm.nextPlayer();
+                let nextPlayer = gm.prevPlayer();
                 gm.switchPlaying(socket.playerName) //ends current player's turn
                 socket.emit('updatePlayerData',{
-                  canPlay : 'no',
+                  canPlay : 'no ',
                   currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                 })
                 gm.switchPlaying(nextPlayer) //next player available
                 console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                 socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
-                    canPlay : 'si'  
+                    canPlay : ''  
                   }
                 );
               })
@@ -134,22 +137,24 @@ class SocketWrapper {
                     if( cardToPlay.canPlayOver(gm.topCard()) ){
                       gm.playCard(cardToPlay)
                       cardToPlay.callEffect(gm)
+
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
                           cardCount : gm.getDeckCards().toString(),
                           topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
                         }
                       );
+
                       let nextPlayer = gm.nextPlayer();
                       gm.switchPlaying(socket.playerName) //ends current player's turn
                       gm.fillHand(socket.playerName)
                       socket.emit('updatePlayerData',{
-                        canPlay : 'no',
+                        canPlay : 'no ',
                         currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                       })
                       gm.switchPlaying(nextPlayer) //next player available
                       console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                       socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
-                          canPlay : 'si'  
+                          canPlay : ''  
                         }
                       );
                     }

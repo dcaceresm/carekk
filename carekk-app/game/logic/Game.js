@@ -35,6 +35,14 @@ class Game {
         return this._playerOrder[0]
     }
 
+    prevPlayer(){
+        let last_player = this._playerOrder.pop();
+        console.log(new Date(), "last player is:",last_player)
+        this._playerOrder.unshift(last_player)
+        console.log(new Date(), "next player is:", this._playerOrder[0])
+        return this._playerOrder[0]
+    }
+
     setStatus(manager, newStatus){
         this._status = newStatus;
     }
@@ -84,9 +92,15 @@ class Game {
     }
     
 
+    /*Cards Side-effects:
+    *   burnCards() : 10 Card side-effect
+    *   flipDirection() : J Card side-effect
+    *   burnToNext() : Joker Card side-effect
+    */
     burnCards(){
-        console.log(new Date(), "someone is burning cards")
+        console.log(new Date(), "calledBurnCards")
         this._burnt.appendAndEmpty(this._discard)
+        this.prevPlayer()
     }
 
     flipDirection(){
@@ -100,7 +114,9 @@ class Game {
         return this._discard.seeTop()
     }
 
-    startGame(){}
+    startGame(){
+        this._discard.addCards(this._deck.drawCard())
+    }
 
 
 
