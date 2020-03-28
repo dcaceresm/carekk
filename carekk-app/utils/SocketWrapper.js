@@ -115,7 +115,7 @@ class SocketWrapper {
                 gm.switchPlaying(nextPlayer) //next player available
                 console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                 socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
-                    canPlay : ''  
+                    canPlay : ' '  
                   }
                 );
               })
@@ -148,13 +148,13 @@ class SocketWrapper {
                       gm.switchPlaying(socket.playerName) //ends current player's turn
                       gm.fillHand(socket.playerName)
                       socket.emit('updatePlayerData',{
-                        canPlay : 'no ',
+                        canPlay : (socket.playerName === nextPlayer ? ' ' : 'no '),
                         currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                       })
                       gm.switchPlaying(nextPlayer) //next player available
                       console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                       socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
-                          canPlay : ''  
+                          canPlay : ' '  
                         }
                       );
                     }

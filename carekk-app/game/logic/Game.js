@@ -104,7 +104,12 @@ class Game {
     }
 
     flipDirection(){
+
+        let currPlayer = this._playerOrder.shift();
+        console.log(new Date(), "player order before flip: ", this._playerOrder )
         this._playerOrder.reverse();    
+        console.log(new Date(), "player order after flip: ", this._playerOrder )
+        this._playerOrder.unshift(currPlayer);
     }
 
     burnToNext(){}
