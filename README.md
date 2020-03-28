@@ -20,14 +20,14 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 ## Features Implementadas
 
 ### Funcionalidad Básica:
-    - Se puede crear una **mesa de juego**. Se asigna un número de mesa al azar
-    - Se puede ingresar a una **mesa**.
-    - El creador de la mesa puede iniciar el juego.
-    - Se pueden jugar cartas. Se respetan las reglas básicas tickeadas más abajo. *(eventualmente todas)*
+- Se puede crear una **mesa de juego**. Se asigna un número de mesa al azar
+- Se puede ingresar a una **mesa**.
+- El creador de la mesa puede iniciar el juego.
+- Se pueden jugar cartas. Se respetan las reglas básicas tickeadas más abajo. *(eventualmente todas)*
 
 ### Falta:
-    - Poder ganar (ó perder jaja)
-    - 3 Cartas ocultas y 3 Cartas Visibles (las que se juegan cuando se acaban las cartas del mazo y las de tu mano).
+- Poder ganar (ó perder jaja)
+- 3 Cartas ocultas y 3 Cartas Visibles (las que se juegan cuando se acaban las cartas del mazo y las de tu mano).
 
 
 
@@ -36,8 +36,8 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 ## Features Planeadas
 
 ### Funcionalidad Básica:
-    - Se pueden crear **salas de juego** y entrar a las mismas a jugar.
-    - Juego básico
+- Se pueden crear **salas de juego** y entrar a las mismas a jugar.
+- Juego básico
     
 
 ### Reglas Básicas:
