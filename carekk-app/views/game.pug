@@ -25,11 +25,15 @@ block content
                             #topCard &nbsp;   
                             button(onClick="drawDiscard()" active="true") Llevarse las Cartas      
             .currentPlayer
-            .warning#warning
-            .canPlay#canPlay
             .triplets
+                .triplet#vTriplet
+                // no hagai trampa, hueón sapo >:(
+                // igual no se puede jijiji    
+                .triplet#hTriplet
+            h3.warning#warning
+            h3.canPlay#canPlay
             .playerHand
-                p Mi mano es:
+                h3 Mi mano es:
                 #hand
 
 
@@ -72,12 +76,30 @@ block content
         socket.on('updatePlayerData', (data) => {
             if(data.currentHand){
                 $('#hand').empty()
-                $('#warning').empty()
-                //$('#hand').text(data.currentHand)    
+                $('#warning').empty()  
                 data.currentHand.map(c => {
                     $('#hand').append('<button class="playableCard" onClick="playCard(this)" v="'+c[0]+'" sym="'+c[1]+'">'+(numbers[c[0]+2] || c[0]+2)+" <b>"+suits[c[1]]+"</b></button>")
                 })
             }
+
+
+            if(data.currentHTriplet){
+                $('#hTriplet').empty()
+                $('#warning').empty()  
+                data.currentHTriplet.map(c => {
+                    $('#hTriplet').append('<button class="playableHiddenCard" onClick="playFromHTriplet(this)" v="'+c[0]+'" sym="'+c[1]+'"> ¿? <b></b></button>')
+                })
+            }
+
+            if(data.currentVTriplet){
+                $('#vTriplet').empty()
+                $('#warning').empty()                
+                data.currentVTriplet.map(c => {
+                    $('#vTriplet').append('<button class="playableCard" onClick="playFromVTriplet(this)" v="'+c[0]+'" sym="'+c[1]+'">'+(numbers[c[0]+2] || c[0]+2)+" <b>"+suits[c[1]]+"</b></button>")
+                })
+            }
+
+
             if(data.warning){
                 $('#warning').empty();
                 $('#warning').text(data.warning)
@@ -115,4 +137,11 @@ block content
         const playCard = (event) => {            
             let tuple = [parseInt(event.attributes.v.value), event.attributes.sym.value]
             socket.emit('playCard', {card : tuple})
+        }
+
+
+        const playFromHTriplet = (event) => {}
+        const playFromVTriplet = (event) => {
+            let tuple = [parseInt(event.attributes.v.value), event.attributes.sym.value]
+            socket.emit('playVT', {card : tuple})
         }

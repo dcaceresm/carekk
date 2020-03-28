@@ -43,12 +43,18 @@ class SocketWrapper {
                                 
                 gm.getPlayerList().map(pl => {
                   gm.fillHand(pl)
+                  gm.initVisibleTriplet(pl)
+                  gm.initHiddenTriplet(pl)
                   socket.broadcast.to(gm.getPlayerSocket(pl)).emit('updatePlayerData',{
-                    currentHand : gm.getHand(pl, {format:"tuple"})
+                    currentHand : gm.getHand(pl, {format:"tuple"}),
+                    currentHTriplet : gm.getHiddenTriplet(pl, {format:"tuple"}),
+                    currentVTriplet : gm.getVisibleTriplet(pl, {format:"tuple"}),
                   })
                   if(pl === socket.playerName){
                     socket.emit('updatePlayerData',{
-                      currentHand : gm.getHand(pl, {format:"tuple"})
+                      currentHand : gm.getHand(pl, {format:"tuple"}),
+                      currentHTriplet : gm.getHiddenTriplet(pl, {format:"tuple"}),
+                      currentVTriplet : gm.getVisibleTriplet(pl, {format:"tuple"}),
                     })
                   }
                 });
@@ -88,14 +94,14 @@ class SocketWrapper {
                 let gm = that._gameManager.getGame(socket.roomNumber)      
                 if(!gm.canPlay(socket.playerName)){
                   socket.emit('updatePlayerData',{
-                    warning : "Aún no es tu turno"
+                    warning : "Aún no es tu turno."
                   })
                   return;
                 }          
 
                 if(gm._discard.length() == 0){
                   socket.emit('updatePlayerData',{
-                    warning : "LA PILA ESTÁ VACÍA!!"
+                    warning : "No hay cartas para sacar de la mesa."
                   })
                   return;
                 }
@@ -131,9 +137,6 @@ class SocketWrapper {
                   if(data.card){
                     let cardTuple = data.card;
                     let cardToPlay = gm.getHand(socket.playerName, {}).pickCardFromTuple(cardTuple)
-                    socket.emit('updatePlayerData',{
-                      currentHand : gm.getHand(socket.playerName, {format:"tuple"})
-                    })
                     if( cardToPlay.canPlayOver(gm.topCard()) ){
                       gm.playCard(cardToPlay)
                       cardToPlay.callEffect(gm)
@@ -161,11 +164,65 @@ class SocketWrapper {
                     else {
                       gm.addToHand(socket.playerName, cardToPlay)
                       socket.emit('updatePlayerData',{
-                        warning : "No puedes jugar esta carta",
-                        currentHand : gm.getHand(socket.playerName, {format:"tuple"})
+                        warning : "No puedes jugar esta carta.",
                       })
                     }
                   }
+              })
+
+
+
+              socket.on('playVT', (data) => {
+
+                let gm = that._gameManager.getGame(socket.roomNumber)
+                  if(!gm.canPlay(socket.playerName)){
+                    socket.emit('updatePlayerData',{
+                      warning : "Aún no es tu turno."
+                    })
+                    return;
+                  }
+
+                  if(!gm.canVT(socket.playerName)){
+                    socket.emit('updatePlayerData',{
+                      warning : "No puedes jugar cartas de la mesa aún."
+                    })
+                    return;
+                  }
+
+                  if(data.card){
+                    let cardTuple = data.card;
+                    let cardToPlay = gm.getVisibleTriplet(socket.playerName, {}).pickCardFromTuple(cardTuple)
+                    if( cardToPlay.canPlayOver(gm.topCard()) ){
+                      gm.playCard(cardToPlay)
+                      cardToPlay.callEffect(gm)
+                      that._io.to('room'+socket.roomNumber).emit('updateGameData', {
+                          cardCount : gm.getDeckCards().toString(),
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
+                        }
+                      );
+
+                      let nextPlayer = gm.nextPlayer();
+                      gm.switchPlaying(socket.playerName) //ends current player's turn
+                      socket.emit('updatePlayerData',{
+                        canPlay : (socket.playerName === nextPlayer ? ' ' : 'no '),
+                        currentVTriplet : gm.getVisibleTriplet(socket.playerName, {format:"tuple"})
+                      })
+                      gm.switchPlaying(nextPlayer) //next player available
+                      console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
+                      socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
+                          canPlay : ' '  
+                        }
+                      );
+                    }
+                    else {
+                      gm.addToVT(socket.playerName, cardToPlay)
+                      socket.emit('updatePlayerData',{
+                        warning : "No puedes jugar esta carta.",
+                      })
+                    }
+                  }
+
+
               })
 
               socket.on('disconnect', () => {

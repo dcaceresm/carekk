@@ -55,6 +55,27 @@ a {
   transition: all 0.2s;
 }
 
+.playableHiddenCard{
+  border: 1px solid black;
+  width:60px;
+  border-radius:5px;
+  display: inline-block;
+  margin: 5px 5px;
+  background-color: #222;
+  vertical-align: bottom;
+  height:75px;
+  transition: all 0.2s;
+  color: white;
+  font-weight: bolder;
+}
+
+
+.playableHiddenCard:hover{
+  -webkit-box-shadow: 0px 0px 14px 3px black;
+  -moz-box-shadow: 0px 0px 14px 3px black;
+  box-shadow: 0px 0px 14px 3px black;
+}
+
 
 .playableCard:hover{
   -webkit-box-shadow: 0px 0px 14px 3px rgba(44,54,245,1);
@@ -182,4 +203,22 @@ a {
 
 #canPlay{
   font-weight: bold;
+}
+
+
+
+.triplets{
+  margin:auto;
+  width:30%;
+}
+.triplet{
+  position:relative;
+  margin:auto;
+  width:auto;
+}
+
+#vTriplet{
+  top:70px;
+  left:10px;
+  z-index: 10;
 }

@@ -50,6 +50,13 @@ class Game {
     canPlay(playerID){
         return this._players.get(playerID)._playing;
     }
+
+    canVT(playerID){
+        console.log(new Date(), "canVisibleTriplet: deck length ->",this._deck.length())
+        console.log(new Date(), "canVisibleTriplet: hand length ->",this._players.get(playerID).getHand().length())
+        return !this._deck.length() && !this._players.get(playerID).getHand().length()
+    }
+
     drawCard(playerID){
         let p = this._players.get(playerID)
         p.drawCards(this._deck)
@@ -61,6 +68,20 @@ class Game {
         while(this._deck.length() > 0 && p.getHand().length() < 3) p.drawCards(this._deck);
     }
 
+    initVisibleTriplet(playerID){
+        let p = this._players.get(playerID)
+        console.log(new Date(), "deck size: ", this._deck.length())
+        while(this._deck.length() > 0 && p.getVisibleTriplet().length() < 3) p.drawToVT(this._deck);
+    }
+
+    initHiddenTriplet(playerID){
+        let p = this._players.get(playerID)
+        console.log(new Date(), "deck size: ", this._deck.length())
+        while(this._deck.length() > 0 && p.getHiddenTriplet().length() < 3) p.drawToHT(this._deck);
+    }
+
+
+
     pickDiscard(playerID){
         this._players.get(playerID)._hand.appendAndEmpty(this._discard)
     }
@@ -68,6 +89,26 @@ class Game {
     getHand(playerID, options){
         let p = this._players.get(playerID);
         let h = p.getHand();
+        if(options.format){
+            if(options.format === "string" ) return h.map(e => e.toString())
+            if(options.format === "tuple"  ) return h.map(e => e.toTuple())
+        } 
+        return h;
+    }
+
+    getVisibleTriplet(playerID, options){
+        let p = this._players.get(playerID);
+        let h = p.getVisibleTriplet();
+        if(options.format){
+            if(options.format === "string" ) return h.map(e => e.toString())
+            if(options.format === "tuple"  ) return h.map(e => e.toTuple())
+        } 
+        return h;
+    }
+
+    getHiddenTriplet(playerID, options){
+        let p = this._players.get(playerID);
+        let h = p.getHiddenTriplet();
         if(options.format){
             if(options.format === "string" ) return h.map(e => e.toString())
             if(options.format === "tuple"  ) return h.map(e => e.toTuple())
@@ -89,6 +130,10 @@ class Game {
 
     addToHand(playerID, card){        
         this._players.get(playerID).getHand().addCard(card);
+    }
+
+    addToVT(playerID, card){        
+        this._players.get(playerID).getVisibleTriplet().addCard(card);
     }
     
 

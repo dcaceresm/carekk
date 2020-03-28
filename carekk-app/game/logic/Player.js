@@ -18,8 +18,27 @@ class Player {
         
     }
 
+    drawToVT(pile){
+        let c = pile.drawCard();
+        //console.log(new Date(), "carta Extraída por jugador",this._name,":",c)  
+        if (c.length > 0) this._visibleTriplet.addCards(c)
+    }
+
+    drawToHT(pile){
+        let c = pile.drawCard();
+        //console.log(new Date(), "carta Extraída por jugador",this._name,":",c)  
+        if (c.length > 0) this._hiddenTriplet.addCards(c)
+    }
     getHand(){
         return this._hand;
+    }
+    
+    getVisibleTriplet(){
+        return this._visibleTriplet;
+    }
+
+    getHiddenTriplet(){
+        return this._hiddenTriplet;
     }
 
     switchPlaying(){
