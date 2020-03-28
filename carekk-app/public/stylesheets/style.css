@@ -8,12 +8,22 @@ a {
   color: #00B7FF;
 }
 
+/* TODO: Hacer responsive */
 .row{
   margin : 10px 0;
 }
 .centered-row{
   text-align: center;
 }
+
+.col-4{
+  margin: auto;
+  padding: 0 10px;
+  width: calc(90%/12 * 4);
+  display: inline-block;
+}
+
+
 
 .muted{
   font-size: 10px;
@@ -151,6 +161,10 @@ a {
 #warning{
   color:red;
   font-weight: bold;
+}
+
+#won{
+  color:#A3CB38;
 }
 #discardPile{
   border: 1px solid #ddd;

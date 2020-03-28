@@ -8,7 +8,7 @@ block content
     .row
         span(style="font-weight:bold;") Jugadores:
         ul#playerList
-
+    h2.won#won
     .buttons
         if initButton
             button.gameButton#initGameButton(onClick="initGame()" active="true") Iniciar Juego
@@ -56,6 +56,11 @@ block content
         socket.on('news', function (data) {
             socket.emit('roomConnection', { room: '#{id}' });
         });
+
+        socket.on('idxredir', ()=>{
+            console.log('redirection')
+            window.location.replace('/')
+        })
 
 
         socket.on('updateGameData', (data) => {
@@ -120,6 +125,12 @@ block content
             data.players.map(name => $('#playerList').append('<li class="playerItem">'+name+'</li>') )            
         })
 
+        socket.on('won', () => {
+            $('#canPlay').empty()
+            $('#warning').empty();
+            $('#won').text("Ganaste! Quédate para conocer al carecaca");
+        })
+
 
 
     script.
@@ -140,7 +151,10 @@ block content
         }
 
 
-        const playFromHTriplet = (event) => {}
+        const playFromHTriplet = (event) => {
+            let tuple = [parseInt(event.attributes.v.value), event.attributes.sym.value]
+            socket.emit('playHT', {card : tuple})
+        }
         const playFromVTriplet = (event) => {
             let tuple = [parseInt(event.attributes.v.value), event.attributes.sym.value]
             socket.emit('playVT', {card : tuple})

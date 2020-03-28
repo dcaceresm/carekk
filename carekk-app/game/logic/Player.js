@@ -11,6 +11,14 @@ class Player {
         this._playing = false;
     }
 
+    won(){
+        return !this._hand.length() && !this._visibleTriplet.length() && !this._hiddenTriplet.length()
+    }
+
+    spectate(){
+        this._spec = true;
+    }
+
     drawCards(pile){        
         let c = pile.drawCard();
         //console.log(new Date(), "carta Extraída por jugador",this._name,":",c)  

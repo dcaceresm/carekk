@@ -9,12 +9,23 @@ block content
   .row.centered-row
     img(src="/images/cacu.png" width="300px")
   .row.centered-row
-    form(action='/game/create' method="POST")
-      button.gameButton(type="submit") Crear Mesa
-  .row.centered-row
-    form(action='/game/join' method="POST")
-      input(type="text" name="room")
-      button.gameButton(type="submit") Entrar a Mesa
-  .row.centered-row
-    form(action='/reglas' method="GET")      
-      button.gameButton.pinkButton(type="submit") Da Rules
+    .col-4
+      form(action='/game/create' method="POST")
+        button.gameButton(type="submit") Crear Mesa
+    .col-4
+      form(action='/game/join' method="POST")
+        label(for="inputName") Nombre: 
+        input#inputName(type="text" name="name")
+        p
+        label(for="roomNumber") Mesa: 
+        input#roomNumber(type="text" name="room")
+        button.gameButton(type="submit") Entrar a Mesa
+    .col-4
+      form(action='/reglas' method="GET")      
+        button.gameButton.pinkButton(type="submit") Da Rules
+
+  .row
+    span Links:  
+    img(src="/images/GitHub-Mark-32px.png" width="16px")
+    span  
+    a(href="https://github.com/dcaceresm/carekk" target="_blank") Github

@@ -32,6 +32,7 @@ class SocketWrapper {
               }
               else{
                   console.log("[404] ERROR: La sala de juegos invocada no existe. ( Sala",data.room,')')
+                  socket.emit('idxredir')                  
               }
 
               socket.on('startGame', (data)=>{
@@ -119,11 +120,16 @@ class SocketWrapper {
                   currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                 })
                 gm.switchPlaying(nextPlayer) //next player available
-                console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                 socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
                     canPlay : ' '  
                   }
                 );
+
+                //Hay que avisar que gané
+                if(gm.playerWon(socket.playerName)){
+                  gm.spectate(socket.playerName)                        
+                  socket.emit('won')
+                }
               })
 
               socket.on('playCard', (data) => {
@@ -155,7 +161,6 @@ class SocketWrapper {
                         currentHand : gm.getHand(socket.playerName, {format:"tuple"})
                       })
                       gm.switchPlaying(nextPlayer) //next player available
-                      console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                       socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
                           canPlay : ' '  
                         }
@@ -208,7 +213,6 @@ class SocketWrapper {
                         currentVTriplet : gm.getVisibleTriplet(socket.playerName, {format:"tuple"})
                       })
                       gm.switchPlaying(nextPlayer) //next player available
-                      console.log(new Date(), "next player socket:", gm.getPlayerSocket(nextPlayer))
                       socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
                           canPlay : ' '  
                         }
@@ -225,10 +229,86 @@ class SocketWrapper {
 
               })
 
+
+              socket.on('playHT', (data) => {
+
+                let gm = that._gameManager.getGame(socket.roomNumber)
+                  if(!gm.canPlay(socket.playerName)){
+                    socket.emit('updatePlayerData',{
+                      warning : "Aún no es tu turno."
+                    })
+                    return;
+                  }
+
+                  if(!gm.canHT(socket.playerName)){
+                    socket.emit('updatePlayerData',{
+                      warning : "No puedes jugar las cartas ocultas aún."
+                    })
+                    return;
+                  }
+
+                  if(data.card){
+                    let cardTuple = data.card;
+                    let cardToPlay = gm.getHiddenTriplet(socket.playerName, {}).pickCardFromTuple(gm.decode(...cardTuple))
+                    if( cardToPlay.canPlayOver(gm.topCard()) ){
+                      gm.playCard(cardToPlay)
+                      cardToPlay.callEffect(gm)
+                      that._io.to('room'+socket.roomNumber).emit('updateGameData', {                          
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
+                        }
+                      );
+
+                      let nextPlayer = gm.nextPlayer();
+                      gm.switchPlaying(socket.playerName) //ends current player's turn
+                      socket.emit('updatePlayerData',{
+                        canPlay : (socket.playerName === nextPlayer ? ' ' : 'no '),
+                        currentHTriplet : gm.getHiddenTriplet(socket.playerName, {format:"tuple"})
+                      })
+                      gm.switchPlaying(nextPlayer) //next player available
+                      socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
+                          canPlay : ' '  
+                        }
+                      );
+
+                      //Hay que avisar que gané
+                      if(gm.playerWon(socket.playerName)){
+                        gm.spectate(socket.playerName)                        
+                        socket.emit('won')
+                      }
+
+                    }
+                    else {
+                      gm.addToHand(socket.playerName, cardToPlay)
+                      gm.pickDiscard(socket.playerName)
+                      that._io.to('room'+socket.roomNumber).emit('updateGameData', {
+                            topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),    
+                          }
+                      );
+                      let nextPlayer = gm.prevPlayer();
+                      gm.switchPlaying(socket.playerName) //ends current player's turn
+                      socket.emit('updatePlayerData',{
+                        canPlay : 'no ',
+                        warning : "¡Oh no!, te llevas la pila completa.",
+                        currentHand : gm.getHand(socket.playerName, {format:"tuple"}),
+                        currentHTriplet : gm.getHiddenTriplet(socket.playerName, {format:"tuple"})
+                      })
+                      gm.switchPlaying(nextPlayer) //next player available
+                      socket.broadcast.to(gm.getPlayerSocket(nextPlayer)).emit('updatePlayerData', {
+                          canPlay : ' '  
+                        }
+                      );
+
+
+                    }
+                  }
+              })
+
               socket.on('disconnect', () => {
                 let gm = that._gameManager.getGame(data.room)
-                gm.removePlayer(socket.playerName)
-                that._io.to('room'+data.room).emit('playerList', {players : gm.getPlayerList()});
+                if(gm){
+                  gm.removePlayer(socket.playerName)
+                  that._io.to('room'+data.room).emit('playerList', {players : gm.getPlayerList()});
+                }
               })    
 
               

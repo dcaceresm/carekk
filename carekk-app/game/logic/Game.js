@@ -1,7 +1,7 @@
 const DeckFactory = require('../assets/DeckFactory')
 const Player = require('./Player')
 const CardPile = require('../assets/CardPile')
-
+const CardEncoder = require('./CardEncoder')
 
 class Game {
 
@@ -12,7 +12,8 @@ class Game {
         this._burnt = new CardPile();
         this._players = new Map()
         this._playerOrder = new Array();
-        this._status = "idle";
+        this._cardEncoder = new CardEncoder(4);
+        this._status = "idle";                
     }
 
     addPlayer(name, socketID){
@@ -20,26 +21,31 @@ class Game {
         this._playerOrder.push(name);
     }
 
+    encode(val,sym){
+        return this._cardEncoder.encode(val,sym);
+    }
+
+    decode(val,sym){
+        return this._cardEncoder.decode(val,sym);
+    }
+
     removePlayer(name){
         this._players.delete(name)
+        this._playerOrder.splice(this._playerOrder.indexOf(name),1);
     }
     getPlayerList(){
         return Array.from(this._players.keys())
     }
 
     nextPlayer(){
-        let last_player = this._playerOrder.shift();
-        console.log(new Date(), "last player is:",last_player)
-        this._playerOrder.push(last_player)
-        console.log(new Date(), "next player is:", this._playerOrder[0])
+        let last_player = this._playerOrder.shift();        
+        this._playerOrder.push(last_player)        
         return this._playerOrder[0]
     }
 
     prevPlayer(){
-        let last_player = this._playerOrder.pop();
-        console.log(new Date(), "last player is:",last_player)
-        this._playerOrder.unshift(last_player)
-        console.log(new Date(), "next player is:", this._playerOrder[0])
+        let last_player = this._playerOrder.pop();        
+        this._playerOrder.unshift(last_player)        
         return this._playerOrder[0]
     }
 
@@ -48,13 +54,16 @@ class Game {
     }
 
     canPlay(playerID){
-        return this._players.get(playerID)._playing;
+        let p = this._players.get(playerID) 
+        return p._playing && !this._spec;
     }
 
     canVT(playerID){
-        console.log(new Date(), "canVisibleTriplet: deck length ->",this._deck.length())
-        console.log(new Date(), "canVisibleTriplet: hand length ->",this._players.get(playerID).getHand().length())
         return !this._deck.length() && !this._players.get(playerID).getHand().length()
+    }
+
+    canHT(playerID){
+        return this.canVT(playerID) && !this._players.get(playerID).getVisibleTriplet().length()
     }
 
     drawCard(playerID){
@@ -64,19 +73,16 @@ class Game {
 
     fillHand(playerID){
         let p = this._players.get(playerID)
-        console.log(new Date(), "deck size: ", this._deck.length())
         while(this._deck.length() > 0 && p.getHand().length() < 3) p.drawCards(this._deck);
     }
 
     initVisibleTriplet(playerID){
         let p = this._players.get(playerID)
-        console.log(new Date(), "deck size: ", this._deck.length())
         while(this._deck.length() > 0 && p.getVisibleTriplet().length() < 3) p.drawToVT(this._deck);
     }
 
     initHiddenTriplet(playerID){
         let p = this._players.get(playerID)
-        console.log(new Date(), "deck size: ", this._deck.length())
         while(this._deck.length() > 0 && p.getHiddenTriplet().length() < 3) p.drawToHT(this._deck);
     }
 
@@ -110,8 +116,7 @@ class Game {
         let p = this._players.get(playerID);
         let h = p.getHiddenTriplet();
         if(options.format){
-            if(options.format === "string" ) return h.map(e => e.toString())
-            if(options.format === "tuple"  ) return h.map(e => e.toTuple())
+            if(options.format === "tuple"  ) return h.map(e => this._cardEncoder.encode(...e.toTuple()))
         } 
         return h;
     }
@@ -143,7 +148,6 @@ class Game {
     *   burnToNext() : Joker Card side-effect
     */
     burnCards(){
-        console.log(new Date(), "calledBurnCards")
         this._burnt.appendAndEmpty(this._discard)
         this.prevPlayer()
     }
@@ -151,9 +155,7 @@ class Game {
     flipDirection(){
 
         let currPlayer = this._playerOrder.shift();
-        console.log(new Date(), "player order before flip: ", this._playerOrder )
         this._playerOrder.reverse();    
-        console.log(new Date(), "player order after flip: ", this._playerOrder )
         this._playerOrder.unshift(currPlayer);
     }
 
@@ -169,8 +171,14 @@ class Game {
     }
 
 
+    playerWon(playerID){
+        return this._players.get(playerID).won();
+    }
 
-
+    spectate(playerID){
+        this._playerOrder.splice(this._playerOrder.indexOf(playerID),1);
+        this._players.get(playerID).spectate();
+    }
     //DECK METHODS
     getDeckCards(){
         return this._deck.length()

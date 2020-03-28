@@ -6,7 +6,7 @@ cardSymbols.set('D', 'Diamantes')
 cardSymbols.set('P', 'Picas')
 cardSymbols.set('T', 'Tréboles')
 
-const identityCallback = (any) => {console.log(new Date(), "Card called identity callback.")}
+const identityCallback = (any) => {}
 
 class Card {
 
