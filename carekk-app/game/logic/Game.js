@@ -7,7 +7,7 @@ class Game {
 
     constructor(id, options){
         this._id = id;
-        this._deck = new DeckFactory(options.joker || false);
+        this._deck = new DeckFactory(options.joker || false).createDeck();
         this._discard = new CardPile();
         this._burnt = new CardPile();
         this._players = new Map()
@@ -169,7 +169,6 @@ class Game {
     }
 
     startGame(){
-        this._deck = this._deck.createDeck()
         let initialCard = this._deck.drawCard()
         this._discard.addCards(initialCard)
         initialCard[0].callEffect(this);
