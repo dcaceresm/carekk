@@ -5,7 +5,7 @@ block content
     h1= title
     p 
       span #{title} 
-      span.muted #{beta ? "(beta)":""}
+      span.muted #{beta ? "Versión v0.3 alpha":""}
   .row.centered-row
     img(src="/images/cacu.png" width="300px")
   .row.centered-row
@@ -14,9 +14,9 @@ block content
         button.gameButton(type="submit") Crear Mesa
     .col-4
       form(action='/game/join' method="POST")
-        label(for="inputName") Nombre: 
-        input#inputName(type="text" name="name")
-        p
+        //- label(for="inputName") Nombre: 
+        //- input#inputName(type="text" name="name")
+        //- p
         label(for="roomNumber") Mesa: 
         input#roomNumber(type="text" name="room")
         button.gameButton(type="submit") Entrar a Mesa
