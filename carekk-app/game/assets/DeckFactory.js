@@ -6,9 +6,8 @@ const sideEffects = {
     8 : (game) => {game.burnCards()},
     9 : (game) => {game.flipDirection()},
     100 : (game) => {game.burnToNext()},
-    
-
 }
+
 class DeckFactory {
     constructor (joker) {
         this.symbols = [
@@ -23,9 +22,8 @@ class DeckFactory {
 
 
     createDeck(){
-        let deck = new CardPile(false);
-
-        for(let i = 0; i<1;i++){ //Test
+        let deck = new CardPile(false);        
+        for(let i = 0; i<2;i++){ //Test
             this.symbols.forEach(sym => {
                 this.numbers.forEach( num => {
                     deck.addCard(new NumericCard(sym,num,sideEffects[num]));

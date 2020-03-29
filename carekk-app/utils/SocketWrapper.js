@@ -1,4 +1,4 @@
-const names = ['diamond', 'heart', 'pike', 'club']
+const names = ['ca_cos@', 'c4qui_', 'KK', 'el_cacas_']
 
 
 class SocketWrapper {
@@ -15,15 +15,19 @@ class SocketWrapper {
             
             
             socket.emit('news', { hello: 'world' });
-
-            socket.on('roomConnection',(data) => {              
-              console.log("Attempting connection to Game Room room"+data.room);    
+            socket.on('roomConnection',(data) => {                            
               let game = that._gameManager.getGame(data.room)
-              if(game){
-                  console.log(socket.id)          
+              if(game){                     
+                  if(game._status === "started") {
+                    socket.emit('idxredir', {alert : "Este juego ya comenzó"})
+                    return;
+                  }
                   socket.join('room'+data.room)
-                  const newPlayer = names[Math.floor(Math.random()*3)]+Math.floor(Math.random()*1000) 
-                  game.addPlayer(newPlayer, socket.id)
+                  const newPlayer = names[Math.floor(Math.random()*4)]+Math.floor(Math.random()*1000) 
+                  if(!game.addPlayer(newPlayer, socket.id)) {
+                    console.log("send init button to", newPlayer)  
+                    socket.emit('initButton')
+                  }
                   console.log(new Date(), "Player", newPlayer, "joined game with ID", data.room)
                   socket.emit('playerData', {name : newPlayer})
                   that._io.to('room'+data.room).emit('playerList', {players : game.getPlayerList()});
@@ -31,17 +35,12 @@ class SocketWrapper {
                   socket.roomNumber = data.room
               }
               else{
-                  console.log("[404] ERROR: La sala de juegos invocada no existe. ( Sala",data.room,')')
                   socket.emit('idxredir')                  
               }
 
               socket.on('startGame', (data)=>{
-                console.log(new Date(), "Game start by", data.initPlayer)
-                let gm = that._gameManager.getGame(socket.roomNumber)
-
-
-                gm.switchPlaying(socket.playerName) 
-                                
+                let gm = that._gameManager.getGame(socket.roomNumber)        
+                gm.switchPlaying(socket.playerName)                                 
                 gm.getPlayerList().map(pl => {
                   gm.fillHand(pl)
                   gm.initVisibleTriplet(pl)
@@ -129,6 +128,13 @@ class SocketWrapper {
                 if(gm.playerWon(socket.playerName)){
                   gm.spectate(socket.playerName)                        
                   socket.emit('won')
+                  console.log(new Date(), "quedan", gm._playerOrder.length, "jugadores Disponibles")
+                  if(gm._playerOrder.length == 1){
+                    that._io.to('room'+socket.roomNumber).emit('endGame', {loser : gm._playerOrder[0]});
+                    setTimeout(() => {
+                      this._gameManager.removeGame(socket.roomNumber);
+                    },30000)
+                  }
                 }
               })
 
@@ -273,7 +279,14 @@ class SocketWrapper {
                       //Hay que avisar que gané
                       if(gm.playerWon(socket.playerName)){
                         gm.spectate(socket.playerName)                        
-                        socket.emit('won')
+                        socket.emit('won')                        
+                        if(gm._playerOrder.length == 1){
+                          that._io.to('room'+socket.roomNumber).emit('endGame', {loser : gm._playerOrder[0]});
+                          setTimeout(() => {                            
+                            this._gameManager.removeGame(socket.roomNumber);
+                          },30000)
+                        }
+                        
                       }
 
                     }
@@ -307,6 +320,9 @@ class SocketWrapper {
                 let gm = that._gameManager.getGame(data.room)
                 if(gm){
                   gm.removePlayer(socket.playerName)
+                  if(!gm._players.size){
+                    this._gameManager.removeGame(socket.roomNumber)
+                  }
                   that._io.to('room'+data.room).emit('playerList', {players : gm.getPlayerList()});
                 }
               })    

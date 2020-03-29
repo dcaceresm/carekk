@@ -7,7 +7,7 @@ class Game {
 
     constructor(id, options){
         this._id = id;
-        this._deck = new DeckFactory(options.joker || false).createDeck();
+        this._deck = new DeckFactory(options.joker || false);
         this._discard = new CardPile();
         this._burnt = new CardPile();
         this._players = new Map()
@@ -17,8 +17,10 @@ class Game {
     }
 
     addPlayer(name, socketID){
+        let mtList = this._players.size;
         this._players.set(name, new Player(name, socketID))
         this._playerOrder.push(name);
+        return mtList
     }
 
     encode(val,sym){
@@ -167,7 +169,11 @@ class Game {
     }
 
     startGame(){
-        this._discard.addCards(this._deck.drawCard())
+        this._deck = this._deck.createDeck()
+        let initialCard = this._deck.drawCard()
+        this._discard.addCards(initialCard)
+        initialCard[0].callEffect(this);
+        this._status = "started"
     }
 
 

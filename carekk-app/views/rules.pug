@@ -1,21 +1,49 @@
 extends layout
 
 block content
+  
   .centered-row
     h1 Reglas del juego (en construcción)
         img(src="/images/minicacu.png" width="48px")
   .row
-    span.muted Dado que el juego está en versión 
-        i beta 
-        span esta página está en modificación. A medida que se implementen nuevas reglas se irán agregando aquí.
+    span.muted Dado que el juego está en desarrollo esta página está en modificación. A medida que se implementen nuevas reglas se irán agregando aquí.
   .row
     span.muted Estas reglas son referenciales y están basadas en las partidas jugadas por los desarrolladores de esta implementación online. Cualquier sugerencia o propuesta de cambio es bien recibida :)
 
   .row
     h2 🏆 Protip: La práctica hace al maestro 
-        
   .row
-    h3 Cartas
+    h3 💩 Cómo se juega 
+      i Carecaca
+      span :
+    ul#ruleList
+      li Una vez que inicia el juego, se le reparten a cada jugador 9 cartas: 3 en la 
+        b mano
+        span , 3 cartas 
+        b visibles 
+        span y 3 cartas 
+        b ocultas 
+        span en la mesa.
+      li El juego comienza jugando las cartas (según las reglas descritas abajo). Puedes jugar 
+        b sólo cartas de la mano 
+        span hasta que se acaban las cartas del mazo.
+      li Siempre que hayan cartas en el mazo, se debe mantener un mínimo de 3 cartas en tu mano. Aunque no te preocupes, en este caso el juego lo hace por ti :).
+      li Si no puedes jugar ninguna carta de tu mano, 
+        b DEBES 
+        span llevarte la pila de descarte a tu mano.
+        span.muted  puchi
+      li Una vez que se acaba el mazo, y tu mano está vacía, puedes comenzar a jugar las cartas sobre la mesa.
+        span.muted  wiiiiii :)
+      li Primero juegas las cartas visibles. Nuevamente, si no puedes jugar ninguna carta te llevas todas las cartas del centro a tu mano. Puedes volver a jugar cartas de la mesa una vez que tu mano vuelva a estar vacía.
+      li Uff, ya vamos llegando al final; te toca jugar las cartas ocultas: Si la carta que escogiste no puede jugarse sobre la pila de descarte, te llevas 
+        b tu carta y la pila 
+        span de vuelta a tu mano. No puedes volver a jugar cartas de la mesa hasta que te deshagas de tu mano. 
+        span.muted puuuta la hueá
+      li Si te quedas sin cartas en la mano y en la mesa, 
+        b FELICITACIONES
+        span , no perdiste jeje. Espera en línea para saber cuál de tus amigos es el carecaca 💩💩💩
+  .row
+    h3 💩 Reglas de las Cartas
     ul#ruleList
         li Las cartas se deben jugar siempre en orden de 
             b menor a Mayor
@@ -32,6 +60,9 @@ block content
                 i Reversa 
                 span del conocido juego UNO )
             li
-                span.muted (planned) 
+                span.muted (AÚN NO IMPLEMENTADO) 
                 span EL Joker es un comodín que obliga al siguiente jugador a llevarse toda la pila de descarte a su mano 😈
 
+  .row
+    h3 Algunas variantes avanzadas
+      span.muted  (AÚN NO IMPLEMENTADO)

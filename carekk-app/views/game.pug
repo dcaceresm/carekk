@@ -9,9 +9,9 @@ block content
         span(style="font-weight:bold;") Jugadores:
         ul#playerList
     h2.won#won
+    h2#globalMessage
     .buttons
-        if initButton
-            button.gameButton#initGameButton(onClick="initGame()" active="true") Iniciar Juego
+        //- button.gameButton#initGameButton(onClick="initGame()") Iniciar Juego
 
     .container.pattern2.prop--border-radius--5px
         .gameContainer
@@ -57,8 +57,8 @@ block content
             socket.emit('roomConnection', { room: '#{id}' });
         });
 
-        socket.on('idxredir', ()=>{
-            console.log('redirection')
+        socket.on('idxredir', (data)=>{
+            if(data.alert) alert(data.alert)
             window.location.replace('/')
         })
 
@@ -131,12 +131,32 @@ block content
             $('#won').text("Ganaste! Quédate para conocer al carecaca");
         })
 
+        socket.on('initButton', () => {
+            $('.buttons').append('<button class="gameButton" id="initGameButton" onclick="initGame()">Iniciar Juego</button>')            
+        })
+
+        socket.on('globalMessage', (data) => {
+            $('#globalMessage').empty();
+            $('#globalMessage').append(data.message)
+        })
+        socket.on('endGame', (data) => {
+            $('#globalMessage').empty();
+            $('#globalMessage').append("El nuevo carecaca es: "+data.loser+".")
+            for(let i = 5; i<10; i++){
+                setTimeout(() => {
+                    $('#globalMessage').empty();
+                    $('#globalMessage').append("Se te redirigirá al inicio en "+(10-i)+" segundos.")
+                }, i*1000)
+            }
+            setTimeout( () => window.location.replace('/'), 10000)
+        })
+
 
 
     script.
         const initGame = () => {
             socket.emit('startGame',{initPlayer: $('#playerName').text()})
-            $('#initGameButton').prop('disabled', true);
+            $('.buttons').empty()
 
         }
 

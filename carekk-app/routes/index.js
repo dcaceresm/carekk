@@ -15,6 +15,7 @@ router.get('/reglas', function(req, res, next) {
 });
 
 router.get('/game/:gameId', function(req,res,next){  
+  console.log(req.jajajaxd)
   res.render('game', {
     id : req.params.gameId
   })
@@ -36,27 +37,25 @@ router.post('/game/join', (req, res, next) => {
   }
   
 })
-router.post('/game/create', function(req,res,next){
-  console.log(new Date(), "received Room creation request.")
+router.post('/game/create', function(req,res,next){  
   let gameRoom = false;
   let gm = req.app.get('gameManager')
   let roomID = "-1"
-  if(gm.gameCount()==10) res.redirect('/game/create?full=true')
-  console.log(new Date(), "Available Rooms. Creating Game.")
+  if(gm.gameCount()==10) res.redirect('/game/create?full=true')  
   while(!gameRoom){
     roomID = Math.ceil(Math.random() * 10).toString();
-    console.log(new Date(), "Trying to create room with ID ", roomID)
     let exists = gm.getGame(roomID) || false    
     if(!exists){
       gm.addGame(roomID)
       gameRoom = gm.getGame(roomID)
     } 
-  }
-  console.log(new Date(), "Game created successfully, redirecting...")
-  res.render('game', {
-    id:roomID,
-    initButton: true
-  })
+  }  
+  res.req.jajajaxd = true;
+  res.redirect('/game/'+roomID);
+  // res.render('game', {
+  //   id:roomID,
+  //   initButton: true
+  // })
 })
 
 

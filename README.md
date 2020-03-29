@@ -6,7 +6,7 @@
 
 Inspirado en el juego universitario favorito de los niños de [31 Minutos](https://es.wikipedia.org/wiki/31_minutos), llega **CareKK**, una versión online de este juego para disfrutar con toda la familia (Edad Recomendada: 0-99 Años).
 
-Disponible para jugar aquí [aquí](https://carecaca.online)
+Disponible para jugar en [https://carecaca.online](https://carecaca.online)
 
 Este proyecto es de código abierto (*MIT license*) por lo que puede ser utilizado por cualquier persona bajo los límites de esta licencia.
 
