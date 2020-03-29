@@ -17,10 +17,7 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 - Ayuda con el Hosting / Deployment
 
 ## Por corregir ASAP:
-- No se están eliminando las salas:
-  - Deberían eliminarse cuando se termina el juego o cuando se van todos los jugadores.
-  - Al terminar el juego, te podría redirigir a una página resumen de la partida
-
+- Al terminar el juego, redirigir a resumen de la partida
 - Jugar **Stacks** de cartas.
 - Hay que mostrar las cartas que se van quemando.
 - Hay que mostrar las cartas en mesa de los otros jugadores
@@ -38,6 +35,7 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 - Una vez se acaban las cartas del mazo y de la mano, se pueden jugar las cartas visibles.
 - Cuando un jugador se queda sin cartas visibles en mesa, puede jugar las invisibles. Si la jugada no es válida, el jugador se lleva la carta jugada más la pila de descarte.
 - Cuando un jugador juega todas sus cartas se le avisa que ganó y puede seguir mirando la partida.
+- Una vez que termina la partida, se avisa a todos los jugadores y son redirigidos al inicio.
 
 ### Reglas Básicas:
 - El **2** es comodín.
