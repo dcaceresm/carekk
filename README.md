@@ -17,12 +17,11 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 - Ayuda con el Hosting / Deployment
 
 ## Por corregir ASAP:
-- Al terminar el juego, redirigir a resumen de la partida
+- Implementar regla de que 4 cartas seguidas del mismo número queman la pila de descarte.
 - Jugar **Stacks** de cartas.
-- Hay que mostrar las cartas que se van quemando.
-- Hay que mostrar las cartas en mesa de los otros jugadores
-- Si la primera carta jugada es un 10 no se elimina automáticamente. Aún no he probado que la primera sea una J, pero probablemente tampoco invertiría el juego de salir al inicio.
+- Mejorar UI/UX
 - Eventualmente hay que agregar animaciones y hacer todo más fluido y user-friendly
+- Al terminar el juego, redirigir a resumen de la partida
 
 
 ## Features Implementadas
@@ -35,7 +34,10 @@ Este proyecto es de código abierto (*MIT license*) por lo que puede ser utiliza
 - Una vez se acaban las cartas del mazo y de la mano, se pueden jugar las cartas visibles.
 - Cuando un jugador se queda sin cartas visibles en mesa, puede jugar las invisibles. Si la jugada no es válida, el jugador se lleva la carta jugada más la pila de descarte.
 - Cuando un jugador juega todas sus cartas se le avisa que ganó y puede seguir mirando la partida.
-- Una vez que termina la partida, se avisa a todos los jugadores y son redirigidos al inicio.
+- V0.4a : Una vez que termina la partida, se avisa a todos los jugadores y son redirigidos al inicio.
+- V0.5a : Ahora hay un minichat
+- V0.5a : Ahora se pueden ver las mesas de los demás jugadores, además de si tiene o no mano.
+
 
 ### Reglas Básicas:
 - El **2** es comodín.

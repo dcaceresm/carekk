@@ -23,7 +23,7 @@ class DeckFactory {
 
     createDeck(){
         let deck = new CardPile(false);        
-        for(let i = 0; i<1;i++){ //Test
+        for(let i = 0; i<2;i++){ //Test
             this.symbols.forEach(sym => {
                 this.numbers.forEach( num => {
                     deck.addCard(new NumericCard(sym,num,sideEffects[num]));
