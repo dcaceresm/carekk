@@ -13,7 +13,13 @@ class SocketWrapper {
         let that = this;
         this._io.on('connection', (socket) => {
             
-            
+            socket.on('chatMsg', (data)=>{
+              that._io.to('room'+socket.roomNumber).emit('chatBroadcast', {
+                message:data.msg,
+                user: socket.playerName, 
+                color: "#9cbb11"
+              });  
+            })
             socket.emit('news', { hello: 'world' });
             socket.on('roomConnection',(data) => {                            
               let game = that._gameManager.getGame(data.room)
@@ -25,17 +31,26 @@ class SocketWrapper {
                   socket.join('room'+data.room)
                   const newPlayer = names[Math.floor(Math.random()*4)]+Math.floor(Math.random()*1000) 
                   if(!game.addPlayer(newPlayer, socket.id)) {
-                    console.log("send init button to", newPlayer)  
                     socket.emit('initButton')
                   }
-                  console.log(new Date(), "Player", newPlayer, "joined game with ID", data.room)
                   socket.emit('playerData', {name : newPlayer})
                   that._io.to('room'+data.room).emit('playerList', {players : game.getPlayerList()});
                   socket.playerName = newPlayer
                   socket.roomNumber = data.room
+
+                  game.getPlayerList().map(pl => {   
+                    console.log(pl)                 
+                    that._io.to('room'+socket.roomNumber).emit('generatePlayerTable',{
+                      currentHand : game.getHand(pl, {format:"tuple"}).length,
+                      currentHTriplet : game.getHiddenTriplet(pl, {format:"tuple"}).length,
+                      currentVTriplet : game.getVisibleTriplet(pl, {format:"tuple"}),
+                      playerID : game.getPlayerSocket(pl),
+                      playerName: pl
+                    })
+                  });
               }
               else{
-                  socket.emit('idxredir')                  
+                  socket.emit('idxredir', {alert : "esta sala no tiene jugadores, redirigiendo..."})                  
               }
 
               socket.on('startGame', (data)=>{
@@ -66,28 +81,25 @@ class SocketWrapper {
 
                 gm.startGame();
                 socket.emit('updatePlayerData',{ canPlay: ' '})
-                    that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                      cardCount : gm.getDeckCards().toString(),
-                      topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""])                  
-                    }
-                );
-              })
-
-
-              socket.on('drawAndPlay', ()=>{
-                let gm = that._gameManager.getGame(socket.roomNumber)
-
-                gm.drawCard(socket.playerName)
                 that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                      cardCount : gm.getDeckCards().toString()
-                    }
-                );
-                
-                
-                socket.emit('updatePlayerData',{
-                  currentHand : gm.getHand(socket.playerName, {format:"tuple"})
-                })
+                  cardCount : gm.getDeckCards().toString(),
+                  topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                      
+                  burntCard: (gm.topBurnt() ? gm.topBurnt().toTuple() : null)             
+                });
+
+                gm.getPlayerList().map(pl => {   
+                  console.log(pl)                 
+                  that._io.to('room'+socket.roomNumber).emit('updatePlayerTable',{
+                    currentHand : gm.getHand(pl, {format:"tuple"}).length,
+                    currentHTriplet : gm.getHiddenTriplet(pl, {format:"tuple"}).length,
+                    currentVTriplet : gm.getVisibleTriplet(pl, {format:"tuple"}),
+                    playerID : gm.getPlayerSocket(pl),
+                    playerName: pl
+                  })
+                });
+
               })
+
               
               socket.on('drawDiscard', () => {   
                 
@@ -123,19 +135,17 @@ class SocketWrapper {
                     canPlay : ' '  
                   }
                 );
-
-                //Hay que avisar que gané
-                if(gm.playerWon(socket.playerName)){
-                  gm.spectate(socket.playerName)                        
-                  socket.emit('won')
-                  console.log(new Date(), "quedan", gm._playerOrder.length, "jugadores Disponibles")
-                  if(gm._playerOrder.length == 1){
-                    that._io.to('room'+socket.roomNumber).emit('endGame', {loser : gm._playerOrder[0]});
-                    setTimeout(() => {
-                      this._gameManager.removeGame(socket.roomNumber);
-                    },30000)
-                  }
-                }
+                
+                gm.getPlayerList().map(pl => {   
+                  console.log(pl)                 
+                  that._io.to('room'+socket.roomNumber).emit('updatePlayerTable',{
+                    currentHand : gm.getHand(pl, {format:"tuple"}).length,
+                    playerID : gm.getPlayerSocket(pl),
+                    playerName: pl
+                  })
+                });
+                
+                
               })
 
               socket.on('playCard', (data) => {
@@ -151,13 +161,34 @@ class SocketWrapper {
                     let cardToPlay = gm.getHand(socket.playerName, {}).pickCardFromTuple(cardTuple)
                     if( cardToPlay.canPlayOver(gm.topCard()) ){
                       gm.playCard(cardToPlay)
-                      cardToPlay.callEffect(gm)
-
+                      cardToPlay.callEffect(gm)                  
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
                           cardCount : gm.getDeckCards().toString(),
-                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]), 
+                          burntCard: (gm.topBurnt() ? gm.topBurnt().toTuple() : null),                                                  
                         }
                       );
+                      
+                      console.log(new Date(), "updating", socket.playerName, "hand to other players")          
+                      gm.getPlayerList().map(pl => {   
+                        that._io.to('room'+socket.roomNumber).emit('updatePlayerTable',{
+                          currentHand : gm.getHand(pl, {format:"tuple"}).length,
+                          playerID : gm.getPlayerSocket(pl),
+                          playerName: pl
+                        })
+                      });
+
+                      //Hay que avisar que gané
+                      if(gm.playerWon(socket.playerName)){
+                        gm.spectate(socket.playerName)                        
+                        socket.emit('won')
+                        if(gm._playerOrder.length == 1){
+                          that._io.to('room'+socket.roomNumber).emit('endGame', {loser : gm._playerOrder[0]});
+                          setTimeout(() => {
+                            this._gameManager.removeGame(socket.roomNumber);
+                          },30000)
+                        }
+                      }
 
                       let nextPlayer = gm.nextPlayer();
                       gm.switchPlaying(socket.playerName) //ends current player's turn
@@ -207,8 +238,8 @@ class SocketWrapper {
                       gm.playCard(cardToPlay)
                       cardToPlay.callEffect(gm)
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                          cardCount : gm.getDeckCards().toString(),
-                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                              
+                          burntCard: (gm.topBurnt() ? gm.topBurnt().toTuple() : null),                                               
                         }
                       );
 
@@ -223,6 +254,18 @@ class SocketWrapper {
                           canPlay : ' '  
                         }
                       );
+                      
+                      console.log(new Date(), "updating", socket.playerName, "triplets to other players")    
+                      gm.getPlayerList().map(pl => {                                           
+                        that._io.to('room'+socket.roomNumber).emit('updatePlayerTable',{                          
+                          currentHTriplet : gm.getHiddenTriplet(pl, {format:"tuple"}).length,
+                          currentVTriplet : gm.getVisibleTriplet(pl, {format:"tuple"}),
+                          playerID : gm.getPlayerSocket(pl),
+                          playerName: pl
+                        })
+                      });
+
+
                     }
                     else {
                       gm.addToVT(socket.playerName, cardToPlay)
@@ -260,9 +303,23 @@ class SocketWrapper {
                       gm.playCard(cardToPlay)
                       cardToPlay.callEffect(gm)
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {                          
-                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                                  
+                          topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                             
+                          burntCard: (gm.topBurnt() ? gm.topBurnt().toTuple() : null),                                                  
                         }
                       );
+
+
+                      gm.getPlayerList().map(pl => {   
+                        console.log(pl)                 
+                        that._io.to('room'+socket.roomNumber).emit('updatePlayerTable',{
+                          currentHand : gm.getHand(pl, {format:"tuple"}).length,
+                          currentHTriplet : gm.getHiddenTriplet(pl, {format:"tuple"}).length,
+                          currentVTriplet : gm.getVisibleTriplet(pl, {format:"tuple"}),
+                          playerID : gm.getPlayerSocket(pl),
+                          playerName: pl
+                        })
+                      });
+
 
                       let nextPlayer = gm.nextPlayer();
                       gm.switchPlaying(socket.playerName) //ends current player's turn
@@ -275,7 +332,8 @@ class SocketWrapper {
                           canPlay : ' '  
                         }
                       );
-
+                      
+                      
                       //Hay que avisar que gané
                       if(gm.playerWon(socket.playerName)){
                         gm.spectate(socket.playerName)                        
@@ -294,7 +352,7 @@ class SocketWrapper {
                       gm.addToHand(socket.playerName, cardToPlay)
                       gm.pickDiscard(socket.playerName)
                       that._io.to('room'+socket.roomNumber).emit('updateGameData', {
-                            topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),    
+                            topCard : (gm.topCard() ? gm.topCard().toTuple() : ["", ""]),                                
                           }
                       );
                       let nextPlayer = gm.prevPlayer();

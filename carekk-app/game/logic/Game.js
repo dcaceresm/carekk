@@ -168,6 +168,10 @@ class Game {
         return this._discard.seeTop()
     }
 
+    topBurnt(){
+        return this._burnt.seeTop()
+    }
+
     startGame(){
         let initialCard = this._deck.drawCard()
         this._discard.addCards(initialCard)

@@ -12,6 +12,11 @@ block content
   //-   input#inputName(type="text" name="name" oninput="changeName(this.value)")    
   //- hr  
   .row.centered-row
+    h3 Hay #{playing} juego
+      if playing != 1
+        span s
+      span  en curso.
+  .row.centered-row
     .col-4
       form(action='/game/create' method="POST")
         input#createName(type="hidden" name="name")      
@@ -26,7 +31,7 @@ block content
       form(action='/reglas' method="GET")      
         button.gameButton.pinkButton(type="submit") Da Rules
 
-  .row
+  .row.bottom--0
     span Links:  
     img(src="/images/GitHub-Mark-32px.png" width="16px")
     span  

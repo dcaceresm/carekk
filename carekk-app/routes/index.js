@@ -3,10 +3,12 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  let gm = req.app.get('gameManager')  
   res.render('index', 
     { 
       title: 'CareKK',
-      beta: true
+      beta: true,
+      playing: gm.gameCount()
     });
 });
 

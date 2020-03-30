@@ -11,16 +11,58 @@ a {
 /* TODO: Hacer responsive */
 .row{
   margin : 10px 0;
+  height: auto;
 }
 .centered-row{
   text-align: center;
 }
+.chatText{
+  width:40%;
+  margin-left: 10px;
+}
+.chatInput{
+  background-color: #eee;
+  border-top:1px solid #ccc;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
 
+#messages{
+  color:black;
+}
+#burntCard{
+  color:black
+}
+#messages li{
+  list-style-type: none;
+}
+.height--380--imp{
+  height: 380px !important;
+}
+.tables{
+  overflow-y: auto;
+  height: 305px;
+  background-color: #eee;
+  border-radius: 5px 5px 0 0;
+}
 .col-4{
   margin: auto;
   padding: 0 10px;
   width: calc(90%/12 * 4);
   display: inline-block;
+}
+.col-3{
+  margin: auto;
+  padding: 0 10px;
+  width: calc(95%/12 * 3);
+  display: inline-block;
+}
+.col-6{
+  margin: auto;
+  padding: 0 10px;
+  width: calc(95%/12 * 6);
+  display: inline-block;
+  /* position:absolute; */
 }
 
 
@@ -43,14 +85,21 @@ a {
   text-align: center;
 }
 
+.gmwContainer{
+  height: 305px;
+  width: 90%;
+  margin: auto;
+}
+
 .gameWindow{
   background-color: rgba(200,200,200,0.2);
-  width: 40%;
+  width:40%;
   margin: auto;
   padding: 0.5em 1em;
   border:1px solid rgb(200,200,200);
   border-radius:5px;
   text-align: center;
+  position: absolute;
 }
 
 .playableCard{
@@ -95,13 +144,13 @@ a {
 
 
 .pattern2 {
-  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255, 0.25), rgba(255,255,255, 0.25) 1px, transparent 1px, transparent 6px);
+  background-image: repeating-linear-gradient(-45deg, rgba(2, 180, 40, 0.2), rgba(0, 185, 40, 0.25)1px, transparent 1px, transparent 6px);
   background-size: 4px 4px;
 }
 
 
 .pattern12 {
-  background-image: repeating-linear-gradient(36deg, rgba(255,255,255, 0.25), rgba(255,255,255, 0.25) 1px, transparent 0px, transparent 2px);
+  background-image: repeating-linear-gradient(36deg, rgba(0, 88, 19, 0.25), rgba(0, 88, 19, 0.25) 1px, transparent 0px, transparent 2px);
   background-size: 6px;
 }
 
@@ -110,10 +159,11 @@ a {
   width:136px;
   border-radius:5px;
   display: inline-block;
-  margin: 0 25px;
+  margin: 0 8px;
   background-color: white;
   vertical-align: bottom;
 }
+
 .cardPile{
   width:110px;
   height:120px;
@@ -166,17 +216,19 @@ a {
 #won{
   color:#A3CB38;
 }
-#discardPile{
+#discardPile, #burntPile{
   border: 1px solid #ddd;
   color: black;
   background-color: #eee;
-  font-size:30px;
+  font-size:28px;
   text-align: center;
 }
 
 #discardPile button{
   font-size: 10px;
   padding:0;
+  position: relative;
+  top: 8px;
 }
 
 #mainDeckCount{
@@ -199,15 +251,22 @@ a {
 
 .header h1{
   text-align: center;
-  background-color: #eef;
-  border-top:1px solid lightgrey;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  background: rgb(66, 184, 221);
+  color:white;
   border-radius: 5px;
   padding: 5px 0;
 }
 
 #playerList{
   display:inline;
-  padding:0
+  padding:0;
+  color:green;
+  font-weight: bolder;
+}
+
+.buttons{
+  display: inline;
 }
 .playerItem{
   list-style: none;
@@ -223,16 +282,73 @@ a {
 
 .triplets{
   margin:auto;
-  width:30%;
+  margin-top:5px;
+  height: 100px;
+  
 }
 .triplet{
+  text-align: center;
   position:relative;
   margin:auto;
-  width:auto;
+  width:80%;
 }
-
-#vTriplet{
-  top:70px;
+.triplet-container{
+  width:25%;
+  margin:auto;
+  margin-top:10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background-color: rgba(200,180,100,0.1);;
+  border-radius: 5px;
+}
+.tripletOwner{
+  width:60%;
+  margin:auto;
+  color:white;
+  font-weight: bold;
+  text-align:center;
+}
+#vTriplet{  
   left:10px;
   z-index: 10;
+}
+#hTriplet{
+  top:-75px;
+}
+#roomNumber{
+  width: 50px
+}
+
+
+.playerTriplet{
+  width:75%;
+  padding: 5px 5px;
+  margin-top:10px;
+  margin-left: 20px;
+  border: 1px solid rgb(66, 184, 221);
+  background-color: rgba(66, 184, 221,0.3);
+  border-radius: 5px;
+  font-size:10px;
+  color:black;
+}
+
+.miniCard{
+  background-color: white;
+  border: 1px solid black;
+  border-radius:4px;
+  margin: 0 2px;
+  color: black;
+  padding: 8px 4px;
+}
+
+.miniHidden{
+  background-color: #222;
+  border: 1px solid black;
+  border-radius:4px;
+  margin: 0 2px;
+  color: white;
+  padding: 8px 4px;
+}
+.bottom--0{
+  bottom: 0 !important;
+  position: absolute !important;
 }

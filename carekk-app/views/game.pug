@@ -1,35 +1,73 @@
 extends layout
 
+block customtitle
+    title CareKK Mesa #{id}
 block content
     .header
-        h1 Mesa #{id}    
-        p Jugando como 
-            span#playerName
-    .row
-        span(style="font-weight:bold;") Jugadores:
-        ul#playerList
+        h1 Mesa #{id}
+        .players
+            a(href="/reglas" target="_blank") 📚 Reglas
+            .buttons                
+            span   Jugando como 
+                span#playerName
+                span   |  
+            span(style="font-weight:bold;") Jugadores:
+            ul#playerList
     h2.won#won
     h2#globalMessage
-    .buttons
-        //- button.gameButton#initGameButton(onClick="initGame()") Iniciar Juego
+    
 
     .container.pattern2.prop--border-radius--5px
         .gameContainer
-            .gameWindow
-                .cardPiles
-                    .cardBorder
-                        .cardPile.pattern12#mainDeck
-                            span#mainDeckCount
-                    .cardBorder                            
-                        .cardPile#discardPile                                                        
-                            #topCard &nbsp;   
-                            button(onClick="drawDiscard()" active="true") Llevarse las Cartas      
-            .currentPlayer
-            .triplets
-                .triplet#vTriplet
-                // no hagai trampa, hueón sapo >:(
-                // igual no se puede jijiji    
-                .triplet#hTriplet
+            .row
+                .col-3
+                    h3 Mesas Oponentes
+                    .tables
+                        .otherTables
+                            //- .playerTriplet
+                            //-     p Player 1:
+                            //-     p 
+                            //-         span.miniCard J ♥️
+                            //-         span.miniCard A ♥️
+                            //-         span.miniCard 3 ♥️
+                            //-         span                                     
+                            //-         span.miniHidden ¿ ?
+                            //-         span  x
+                            //-         span 3
+                            //-     p Mano: 
+                            //-         span.gotHand  Sí                            
+                                
+                .col-6
+                    .gmwContainer
+                        .gameWindow
+                            .cardPiles
+                                .cardBorder
+                                    .cardPile.pattern12#mainDeck
+                                        span#mainDeckCount
+                                .cardBorder                            
+                                    .cardPile#discardPile                                                        
+                                        #topCard 
+                                            p &nbsp;   
+                                        button(onClick="drawDiscard()" active="true") Llevarse las Cartas      
+                                .cardBorder                            
+                                    .cardPile#burntPile  
+                                        #burntCard 
+                                            p &nbsp;      
+                .col-3.height--380--imp
+                    h3 Chat
+                    .tables
+                        ul#messages
+                    form.chatInput#messagesForm
+                        input(type="text").chatText
+                        button.gameButton(type="submit") Enviar a tod@s
+            .row
+                .triplet-container
+                    .tripletOwner#currPlayer                         
+                    .triplets
+                        .triplet#vTriplet
+                        // no hagai trampa, hueón sapo >:(
+                        // igual no se puede jijiji    
+                        .triplet#hTriplet
             h3.warning#warning
             h3.canPlay#canPlay
             .playerHand
@@ -53,13 +91,60 @@ block content
             13 : 'K',
             14 : 'A' 
         }
+
+        $('#messagesForm').submit(event => {
+            event.preventDefault()
+            const msg = $( "input" ).first().val()
+            if(msg!==""){
+                $( "input" ).first().val("")
+                socket.emit('chatMsg', {msg: msg})
+            }
+        })
+
+        socket.on('chatBroadcast', (data) => {
+            $('#messages').append('<li><span style="font-weight:bold;color:'+(data.color||"black")+';">'+data.user+'</span> dice: '+data.message+'</li>')
+        })
         socket.on('news', function (data) {
             socket.emit('roomConnection', { room: '#{id}' });
         });
 
         socket.on('idxredir', (data)=>{
-            if(data.alert) alert(data.alert)
+            if(data){
+                if(data.alert) alert(data.alert)
+            }
             window.location.replace('/')
+        })
+
+        socket.on('generatePlayerTable', (data)=>{
+            if(data.playerID !== socket.id){
+                if(!Object.keys($('#'+data.playerID+"pt")).length){
+                    $('.otherTables').append('<div class="playerTriplet" id="'+data.playerID+'pt"><p>'+data.playerName+'</p><p class="spans"></p><p class="handp"></p></div>')
+                }
+                
+            }
+        })
+
+        socket.on('updatePlayerTable', (data)=>{                        
+            if(data.playerID !== socket.id){
+                console.log("updating data")
+                if(data.currentVTriplet && typeof(data.currentHTriplet)!=="undefined"){
+                    console.log("updating data")
+                    let cards = $('#'+data.playerID+"pt").find(".spans")
+                    cards.empty()
+                    data.currentVTriplet.map( vtt => {
+                        cards.append('<span class="miniCard">'+(numbers[vtt[0]+2] || vtt[0]+2)+" "+suits[vtt[1]]+'</span>')
+                    })
+                    cards.append('<span>   </span>')
+                    cards.append('<span class="miniHidden">¿ ?</span>')
+                    cards.append('<span>x</span>')
+                    cards.append('<span>'+data.currentHTriplet+'</span>')
+                }
+                if(typeof(data.currentHand)!=="undefined"){
+                    let gotHand = $('#'+data.playerID+"pt").find(".handp")
+                    gotHand.empty()
+                    gotHand.append('<span>Mano: '+(data.currentHand ? "Sí" : "No")+'</span>')
+                }
+            }
         })
 
 
@@ -68,13 +153,15 @@ block content
                 $('#mainDeckCount').empty()    
                 $('#mainDeckCount').text(data.cardCount)    
             }
-            if(data.discardCount){
-
+            if(data.burntCard){
+                $('#burntCard').empty()
+                if(data.burntCard[1]!=="")
+                    $('#burntCard').append("<p>"+(numbers[data.burntCard[0]+2] || data.burntCard[0]+2)+" "+suits[data.burntCard[1]]+"</p>");
             }
             if(data.topCard){
                 $('#topCard').empty()
                 if(data.topCard[0]!=="" && data.topCard[1]!=="")    
-                    $('#topCard').text((numbers[data.topCard[0]+2] || data.topCard[0]+2)+" "+suits[data.topCard[1]]);
+                    $('#topCard').append("<p>"+(numbers[data.topCard[0]+2] || data.topCard[0]+2)+" "+suits[data.topCard[1]]+"</p>");
             }
         })
 
@@ -118,6 +205,7 @@ block content
 
         socket.on('playerData', (data) => {
             $('#playerName').text(data.name)
+            $('#currPlayer').text("Mesa de "+data.name)
         })
 
         socket.on('playerList', (data) => {
@@ -154,6 +242,8 @@ block content
 
 
     script.
+
+        
         const initGame = () => {
             socket.emit('startGame',{initPlayer: $('#playerName').text()})
             $('.buttons').empty()
